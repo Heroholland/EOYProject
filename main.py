@@ -1,5 +1,4 @@
 from databasewrapper import Database
-import requests
 db = Database()
 print(db.insert("test", "testing123"))
 print(db.read("test"))
