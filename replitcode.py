@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_classful import FlaskView, route
 from replit import db
 
@@ -30,8 +30,16 @@ class DatabaseView(FlaskView):
                 return "error: missing_key"
         except Exception as ex:
             return f"error: {ex}"
+        
+class ClientWebsite(FlaskView):
+    route_base = '/'  # Base route for the class
+
+    @route('/', methods=['GET'])
+    def index(self):
+        return render_template('index.html')
 
 DatabaseView.register(app)
+ClientWebsite.register(app)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)

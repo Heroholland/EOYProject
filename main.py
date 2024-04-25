@@ -1,8 +1,5 @@
 from databasewrapper import Database
+import Utils
 db = Database()
-print(db.insert("test", "testing123"))
-print(db.read("test"))
-print(db.replace("test", "testing1234"))
-print(db.read("test"))
-print(db.delete("test"))
-print(db.read("test"))
+util = Utils.Utility()
+print(str(util.image_to_matrix("EOYProject\\testimg.jpg").get_raw()))
