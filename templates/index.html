@@ -17,9 +17,47 @@
             background: rgb(2,0,36);
             background: linear-gradient(128deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 100%);
         }
+      .input-btn {
+        text-align: center;
+        border: none;
+        background-color: #4DFF07;
+        box-shadow: inset 0px 0px 20px #FFF;
+        color: white;
+        padding: 15px 32px;
+        border-radius: 10px;
+        margin-top: 4vh;
+      }
+      .form {
+        text-align: center;
+        border: none;
+        background-color: #1A1919, 0.75;
+        color: white;
+        padding: 15px 15px;
+        border-radius: 10px;
+        margin-top: 2vh;
+        align-self: center;
+        align: center;
+        margin-left: 45vw;
+        width: 10vw;
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+      }
+      form {
+        text-align: center;
+        color: white;
+      }
     </style>
 </head>
 <body>
     <h1 class='title'>Light Board Advertisement</h1>
+    <div style="text-align:center; align-content:center">
+      <form action="/upload" class="form" method="post" enctype="multipart/form-data" accept="image/*">
+        <input type="file" id="myFile" name="file">
+        <br>
+        <input type="text" id="fileName" name="fileName" placeholder="File Name" style="margin-top: 2vh;">
+        <br>
+        <input type="submit" class="input-btn">
+      </form>
+      </div>
 </body>
 </html>

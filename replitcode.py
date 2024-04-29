@@ -4,6 +4,7 @@ from replit import db
 import Utils
 from PIL import Image
 import os
+import databasewrapper
 
 app = Flask(__name__)
 
@@ -49,6 +50,7 @@ class ClientWebsite(FlaskView):
 
   @route('/upload', methods=['POST'])
   def upload(self):
+    file_name = request.form['fileName']
     image = request.files.get('file', '')
     if 'file' not in request.files:
       return 'error: missing_file'
@@ -62,7 +64,8 @@ class ClientWebsite(FlaskView):
     print(image)
     util = Utils.Utility()
     matrix = util.image_to_matrix("upload.jpg").get_raw()
-    return str(matrix)
+    db[file_name] = str(matrix)
+    return "done"
 
 
 DatabaseView.register(app)
