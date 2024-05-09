@@ -4,9 +4,12 @@ from replit import db
 import Utils
 from PIL import Image
 import json
+from gpt import DalleClient
+import os
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-
+socketio = SocketIO(app, socketio = SocketIO(app, cors_allowed_origins='*')
 
 class DatabaseView(FlaskView):
   route_base = '/'  # Base route for the class
@@ -49,7 +52,6 @@ class DatabaseView(FlaskView):
     except Exception as ex:
       return f"error: {ex}"
 
-
 class ClientWebsite(FlaskView):
   route_base = '/'  # Base route for the class
 
@@ -64,25 +66,49 @@ class ClientWebsite(FlaskView):
   @route('/upload', methods=['POST'])
   def upload(self):
     file_name = request.form['fileName']
-    image = request.files.get('file', '')
     if 'file' not in request.files:
-      return 'error: missing_file'
+        return 'error: missing_file'
     file = request.files['file']
     if file.filename == '':
-      return 'No selected file'
+        return 'No selected file'
     if file and self.allowed_file(file.filename):
-      im = Image.open(file.stream)
-      png_path = 'upload.jpg'
-      im.save(png_path)
-    print(image)
+        im = Image.open(file.stream)
+        im = im.convert('RGB')  # Convert the image to RGB
+        jpeg_path = 'upload.jpg'
+        im.save(jpeg_path, 'JPEG')  # Save the file as JPEG
+        util = Utils.Utility()
+        #matrix = util.image_to_matrix(jpeg_path).get_raw()
+        base64_string = util.image_to_base64(im)
+        db[file_name] = str(base64_string)
+        notify_clients(file_name)
+        return "done"
+
+  @route('/gpt', methods=['POST'])
+  def gptit(self):
+    prompt = request.form['prompt']
+    file_name = request.form['fileName']
+    api_key = os.environ['APIKEY']
+    dalle_client = DalleClient(api_key)
+    image = dalle_client.generate_image(prompt)
     util = Utils.Utility()
-    matrix = util.image_to_matrix("upload.jpg").get_raw()
-    db[file_name] = str(matrix)
+    base64_string = util.image_to_base64(image)
+    db[file_name] = str(base64_string)
+    notify_clients(file_name)
     return "done"
 
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
+
+def notify_clients(message):
+    emit('notification', {'message': message}, broadcast=True)
 
 DatabaseView.register(app)
 ClientWebsite.register(app)
 
 if __name__ == '__main__':
-  app.run(host='0.0.0.0', port=80)
+  socketio.run(host='0.0.0.0', port=80)
