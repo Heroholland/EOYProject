@@ -3,8 +3,7 @@ from flask_classful import FlaskView, route
 from replit import db
 import Utils
 from PIL import Image
-import os
-import databasewrapper
+import json
 
 app = Flask(__name__)
 
@@ -33,6 +32,20 @@ class DatabaseView(FlaskView):
         return db[json['key']]
       else:
         return "error: missing_key"
+    except Exception as ex:
+      return f"error: {ex}"
+
+  @route('/readall', methods=['POST'])
+  def readall(self):
+    try:
+      result = {}
+      for key in db.keys():
+        if key != None:
+          result[key] = db[key]
+        else:
+          continue
+      return str(json.dumps(result))
+        
     except Exception as ex:
       return f"error: {ex}"
 
